@@ -9,7 +9,7 @@ import (
 
 // here we are declaring a secret key that will be used later for generating JWT
 // for now the key is secretkey
-var jwtKey = []byte("secretkey")
+var jwtKey = []byte("supersecretkey")
 
 // Define a custom struct for JWT claims which will ultimately become the payload of the JWT
 type JWTClaim struct {
@@ -28,7 +28,7 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err = token.SignedString(jwtKey)
 	return
 }
