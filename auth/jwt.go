@@ -21,6 +21,8 @@ type JWTClaim struct {
 // this function will return the generated JWT string. Here we set default expiration time for 1 hour
 func GenerateJWT(email string, username string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
+	// From here on we create a new claim variable with the available data and expiration time.
+	// https://github.com/dgrijalva/jwt-go/blob/v3.2.0/claims.go#L18
 	claims := &JWTClaim{
 		Email:    email,
 		Username: username,
@@ -28,6 +30,7 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
+	// Finally we generate the token using the HS256 signing algorithm by passing the previous created claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err = token.SignedString(jwtKey)
 	return
@@ -48,12 +51,12 @@ func ValidateToken(signedToken string) (err error) {
 	}
 	claims, ok := token.Claims.(*JWTClaim)
 	if !ok {
-		err = errors.New("could not parse claims")
+		err = errors.New("error: could not parse claims")
 		return
 	}
 
 	if claims.ExpiresAt < time.Now().Local().Unix() {
-		err = errors.New("token expired")
+		err = errors.New("error: token expired")
 		return
 	}
 	return
